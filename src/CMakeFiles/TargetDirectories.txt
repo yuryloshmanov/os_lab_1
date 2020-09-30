@@ -1,4 +1,0 @@
-/Users/yuryloshmanov/Documents/Repositories/os_lab_2/src/CMakeFiles/rebuild_cache.dir
-/Users/yuryloshmanov/Documents/Repositories/os_lab_2/src/CMakeFiles/edit_cache.dir
-/Users/yuryloshmanov/Documents/Repositories/os_lab_2/src/CMakeFiles/child.dir
-/Users/yuryloshmanov/Documents/Repositories/os_lab_2/src/CMakeFiles/main.dir
