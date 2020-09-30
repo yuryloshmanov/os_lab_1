@@ -28,7 +28,7 @@ do
     cp $TEST ../src
     cd ../src
     echo
-    tput setaf 6; printf "Answer: "; tput setaf 7;
+    tput setaf 6; echo "Answer: "; tput setaf 7;
     ./main $TEST
     rm $TEST
     echo
