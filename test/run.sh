@@ -13,9 +13,6 @@ if [ $# -eq 1 ]; then
     fi
 fi
 
-
-PROG=main
-
 cd ../src
 cmake CMakeLists.txt
 make
