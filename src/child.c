@@ -3,8 +3,9 @@
 
 int main() {
     float a, b, c;
-    scanf("%f %f %f", &a, &b, &c);
-    float result = a + b + c;
-    write(STDOUT_FILENO, &result, sizeof(result));
+    while (scanf("%f %f %f", &a, &b, &c) != -1) {
+        float result = a + b + c;
+        write(STDOUT_FILENO, &result, sizeof(result));
+    }
     return 0;
 }

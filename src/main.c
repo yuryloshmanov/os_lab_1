@@ -39,9 +39,9 @@ int main(int argc, const char *argv[]) {
         waitpid(pid, (int *)NULL, 0);
 
         float result;
-        read(fd[0], &result, sizeof(result));
-        printf("%f\n", result);
-
+        while (read(fd[0], &result, sizeof(result))) {
+            printf("%f\n", result);
+        }
         close(fd[0]);
     }
     return 0;
