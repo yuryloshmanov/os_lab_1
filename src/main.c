@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main() {
+int main(int argc, const char *argv[]) {
     int fd[2];
     pipe(fd);
 
@@ -12,10 +12,18 @@ int main() {
         fprintf(stderr, "fork failed");
         exit(1);
     } else if (pid == 0) {
-        char file_name[50];
-        printf("Enter file name: ");
-        scanf("%[^\n]%*c", file_name);
-        FILE *f = fopen(file_name, "r");
+        FILE *f = NULL;
+        if (argc > 1) {
+            f = fopen(argv[1], "r");
+        } else {
+            char file_name[50];
+            printf("Enter file name: ");
+            scanf("%[^\n]%*c", file_name);
+            f = fopen(file_name, "r");
+        }
+        if (!f) {
+            fprintf(stderr, "Can't open file");
+        }
 
         dup2(fileno(f), STDIN_FILENO);
         dup2(fd[1], STDOUT_FILENO);
