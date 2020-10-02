@@ -1,45 +1,63 @@
-#include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main(int argc, const char *argv[]) {
+int main(const int argc, const char *argv[]) {
     int fd[2];
     if (pipe(fd) == -1) {
-        fprintf(stderr, "pipe error\n");
-        exit(1);
+        char message[] = "pipe error\n";
+        write(STDERR_FILENO, &message, sizeof(message) - 1);
+        return 1;
     }
 
     pid_t pid = fork();
     if (pid < 0) {
-        fprintf(stderr, "fork error\n");
-        exit(2);
+        char message[] = "fork error\n";
+        write(STDERR_FILENO, &message, sizeof(message) - 1);
+        return 2;
     } else if (pid == 0) {
-        FILE *f = NULL;
+        int file;
         if (argc > 1) {
-            f = fopen(argv[1], "r");
+            file = open(argv[1], O_RDONLY);
         } else {
+            char buff[] = "Enter file name: ";
             char file_name[50];
-            printf("Enter file name: ");
-            scanf("%[^\n]%*c", file_name);
-            f = fopen(file_name, "r");
-        }
-        if (!f) {
-            fprintf(stderr, "can't open file\n");
-            exit(3);
+
+            write(STDOUT_FILENO, &buff, sizeof(buff) - 1);
+            read(STDIN_FILENO, &file_name, sizeof(file_name));
+            int i;
+            for (i = 0; i < 50; i++) {
+                if (file_name[i] == '\n' || file_name[i] == '\0') {
+                    break;
+                }
+            }
+            char ff[i + 1];
+            for (int j = 0; j < i; j++) {
+                ff[j] = file_name[j];
+            }
+            ff[i] = '\0';
+            file = open(ff, O_RDONLY);
         }
 
-        dup2(fileno(f), STDIN_FILENO);
+        if (file == -1) {
+            char message[] = "can't open file\n";
+            write(STDERR_FILENO, &message, sizeof(message) - 1);
+            return 3;
+        }
+
+        dup2(file, STDIN_FILENO);
         dup2(fd[1], STDOUT_FILENO);
         dup2(fd[1], STDERR_FILENO);
 
         close(fd[0]);
         close(fd[1]);
-        fclose(f);
+        close(file);
 
         if (execl("child", "child", (char *) NULL) == -1) {
-            fprintf(stderr, "exec error\n");
-            exit(4);
+            char message[] = "exec error\n";
+            write(STDERR_FILENO, &message, sizeof(message) - 1);
+            return 4;
         }
     } else {
         close(fd[1]);
@@ -47,7 +65,16 @@ int main(int argc, const char *argv[]) {
 
         float result;
         while (read(fd[0], &result, sizeof(result))) {
-            printf("%f\n", result);
+            char buff[50];
+            gcvt(result, 7, buff);
+            int i;
+            for (i = 0; i < 50; i++) {
+                if (buff[i] == '\0') {
+                    break;
+                }
+            }
+            buff[i] = '\n';
+            write(STDOUT_FILENO, &buff, i + 1);
         }
         close(fd[0]);
     }
