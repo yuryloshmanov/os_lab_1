@@ -9,7 +9,7 @@ int main() {
             char c;
             char buff[50];
             for (int k = 0; k < 50; k++) {
-                buff[i] = '\0';
+                buff[k] = '\0';
             }
             int count = 0;
             for (int j = 0;; j++) {
