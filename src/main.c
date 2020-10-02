@@ -5,12 +5,15 @@
 
 int main(int argc, const char *argv[]) {
     int fd[2];
-    pipe(fd);
+    if (pipe(fd) == -1) {
+        fprintf(stderr, "pipe error\n");
+        exit(1);
+    }
 
     pid_t pid = fork();
     if (pid < 0) {
-        fprintf(stderr, "fork failed");
-        exit(1);
+        fprintf(stderr, "fork error\n");
+        exit(2);
     } else if (pid == 0) {
         FILE *f = NULL;
         if (argc > 1) {
@@ -22,7 +25,8 @@ int main(int argc, const char *argv[]) {
             f = fopen(file_name, "r");
         }
         if (!f) {
-            fprintf(stderr, "Can't open file");
+            fprintf(stderr, "can't open file\n");
+            exit(3);
         }
 
         dup2(fileno(f), STDIN_FILENO);
@@ -33,7 +37,10 @@ int main(int argc, const char *argv[]) {
         close(fd[1]);
         fclose(f);
 
-        execl("child", "child", (char *) NULL);
+        if (execl("child", "child", (char *) NULL) == -1) {
+            fprintf(stderr, "exec error\n");
+            exit(4);
+        }
     } else {
         close(fd[1]);
         waitpid(pid, (int *)NULL, 0);
