@@ -22,7 +22,7 @@ int main() {
                 if (c == '\n') {
                     break;
                 }
-                if (isdigit(c) || c == '.') {
+                if (c == '-' || isdigit(c) || c == '.') {
                     count++;
                     buff[j] = c;
                 } else {
